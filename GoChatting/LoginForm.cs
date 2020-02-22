@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using GoChatting.Model;
 using GoChatting.Bll;
+using System.Net.NetworkInformation;
 
 namespace GoChatting
 {
@@ -62,49 +63,85 @@ namespace GoChatting
         /// </summary>
         private void loginButton_Click(object sender, EventArgs e)
         {
-            if (errorCount >= 3)//3次登录失败后输入验证码
+            Login();
+        }
+
+        /// <summary>
+        /// 获取按键
+        /// </summary>
+        private void LoginForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 13)//如果按下回车键
             {
-                captchaLabel.Visible = true;//显示验证码提示
-                captchaPanel.Visible = true;//显示验证码图片
-                captchaTextBox.Visible = true;//显示验证码输入框
-                //获取用户输入验证码
-                string captchaText = captchaTextBox.Text.Trim().ToLower();
-                if (string.IsNullOrEmpty(captchaText))
+                if (accountTextBox.Focused)//若正在输入账号
                 {
-                    MessageBox.Show("请输入验证码");
-                    return;
+                    passwordTextBox.Focus();
                 }
-                //判断验证码是否相等
-                if (captchaText != captcha.GetValidateNum().ToLower())
+                else if (passwordTextBox.Focused)//若正在输入密码
                 {
+                    if (captchaTextBox.Visible)//若要求输入验证码
+                    {
+                        captchaTextBox.Focus(); 
+                    }
+                    else//不要求输入验证码
+                    {
+                        Login();
+                    }
+                }
+            }
+        }
+        private void Login()
+        {
+            if (IsOnLine())
+            {
+                if (errorCount >= 3)//3次登录失败后输入验证码
+                {
+                    captchaLabel.Visible = true;//显示验证码提示
+                    captchaPanel.Visible = true;//显示验证码图片
+                    captchaTextBox.Visible = true;//显示验证码输入框
+                                                  //获取用户输入验证码
+                    string captchaText = captchaTextBox.Text.Trim().ToLower();
+                    if (string.IsNullOrEmpty(captchaText))
+                    {
+                        MessageBox.Show("请输入验证码");
+                        return;
+                    }
+                    //判断验证码是否相等
+                    if (captchaText != captcha.GetValidateNum().ToLower())
+                    {
+                        errorCount++;//错误次数增加
+                        return;
+                    }
+                }
+                string account = accountTextBox.Text;//获取输入账号
+                string password = passwordTextBox.Text;//获取输入密码
+                try
+                {
+                    if (!userBll.Login(account, password))
+                    {
+                        errorCount++;//错误次数增加
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("登录成功");
+                        User user = userBll.GetUserLogin(account);//获取登录用户
+                        MainForm mainForm = new MainForm(user);
+                        mainForm.Show();
+                        Hide();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                     errorCount++;//错误次数增加
-                    return;
                 }
+                captchaPanel.BackgroundImage = captcha.GetValidate(4);
             }
-            string account = accountTextBox.Text;//获取输入账号
-            string password = passwordTextBox.Text;//获取输入密码
-            try
+            else
             {
-                if (!userBll.Login(account, password))
-                {
-                    errorCount++;//错误次数增加
-                    return;
-                }
-                else
-                {
-                    MessageBox.Show("登录成功");
-                    User user = userBll.GetUserLogin(account);//获取登录用户
-                    MainForm mainForm = new MainForm(user);
-                    mainForm.Show();
-                    Hide();
-                }
+                MessageBox.Show("未联网");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                errorCount++;//错误次数增加
-            }
-            captchaPanel.BackgroundImage = captcha.GetValidate(4);
         }
 
         /// <summary>
@@ -120,9 +157,16 @@ namespace GoChatting
         /// </summary>
         private void registerLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            RegisterForm registerForm = new RegisterForm(this);
-            registerForm.Show();
-            Hide();
+            if (IsOnLine())
+            {
+                RegisterForm registerForm = new RegisterForm(this);
+                registerForm.Show();
+                Hide();
+            }
+            else
+            {
+                MessageBox.Show("未联网");
+            }
         }
 
         /// <summary>
@@ -142,6 +186,39 @@ namespace GoChatting
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 判断是否联网
+        /// </summary>
+        /// <returns>是否联网</returns>
+        private bool IsOnLine()
+        {
+            try
+            {
+                Ping objPingSender = new Ping();
+                PingOptions objPinOptions = new PingOptions
+                {
+                    DontFragment = true
+                };
+                string data = "";
+                byte[] buffer = Encoding.UTF8.GetBytes(data);
+                int intTimeout = 1000;
+                PingReply objPinReply = objPingSender.Send("152.136.73.240", intTimeout, buffer, objPinOptions);
+                string strInfo = objPinReply.Status.ToString();
+                if (strInfo == "Success")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }

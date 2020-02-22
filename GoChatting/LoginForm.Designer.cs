@@ -47,6 +47,7 @@
             this.accountTextBox.Name = "accountTextBox";
             this.accountTextBox.Size = new System.Drawing.Size(183, 33);
             this.accountTextBox.TabIndex = 0;
+            this.accountTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LoginForm_KeyDown);
             // 
             // accountLabel
             // 
@@ -77,6 +78,7 @@
             this.passwordTextBox.PasswordChar = '*';
             this.passwordTextBox.Size = new System.Drawing.Size(183, 33);
             this.passwordTextBox.TabIndex = 0;
+            this.passwordTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LoginForm_KeyDown);
             // 
             // passwordLabel
             // 
@@ -107,6 +109,7 @@
             this.captchaTextBox.Size = new System.Drawing.Size(183, 33);
             this.captchaTextBox.TabIndex = 0;
             this.captchaTextBox.Visible = false;
+            this.captchaTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LoginForm_KeyDown);
             // 
             // captchaPanel
             // 
