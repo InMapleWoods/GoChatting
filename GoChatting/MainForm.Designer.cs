@@ -36,14 +36,14 @@
             this.connectStatusLabel = new System.Windows.Forms.Label();
             this.functionPanel = new System.Windows.Forms.Panel();
             this.communicatePanel = new System.Windows.Forms.Panel();
+            this.sendMessageButton = new System.Windows.Forms.Button();
+            this.readySendRichTextBox = new System.Windows.Forms.RichTextBox();
             this.communicateToolStrip = new System.Windows.Forms.ToolStrip();
             this.communicateToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.communicateToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.communicateVoiceToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.showContentRichTextBox = new System.Windows.Forms.RichTextBox();
             this.communicateButton = new System.Windows.Forms.Button();
-            this.readySendRichTextBox = new System.Windows.Forms.RichTextBox();
-            this.sendMessageButton = new System.Windows.Forms.Button();
             this.functionPanel.SuspendLayout();
             this.communicatePanel.SuspendLayout();
             this.communicateToolStrip.SuspendLayout();
@@ -83,6 +83,7 @@
             this.connectButton.TabIndex = 3;
             this.connectButton.Text = "连接";
             this.connectButton.UseVisualStyleBackColor = true;
+            this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
             // connectStatusLabel
             // 
@@ -100,6 +101,7 @@
             this.functionPanel.Controls.Add(this.onlineLabel);
             this.functionPanel.Controls.Add(this.onlineUsersComboBox);
             this.functionPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.functionPanel.Enabled = false;
             this.functionPanel.Location = new System.Drawing.Point(0, 94);
             this.functionPanel.Name = "functionPanel";
             this.functionPanel.Size = new System.Drawing.Size(818, 461);
@@ -116,6 +118,26 @@
             this.communicatePanel.Name = "communicatePanel";
             this.communicatePanel.Size = new System.Drawing.Size(818, 368);
             this.communicatePanel.TabIndex = 3;
+            // 
+            // sendMessageButton
+            // 
+            this.sendMessageButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sendMessageButton.Location = new System.Drawing.Point(0, 326);
+            this.sendMessageButton.Name = "sendMessageButton";
+            this.sendMessageButton.Size = new System.Drawing.Size(818, 42);
+            this.sendMessageButton.TabIndex = 4;
+            this.sendMessageButton.Text = "发送";
+            this.sendMessageButton.UseVisualStyleBackColor = true;
+            this.sendMessageButton.Click += new System.EventHandler(this.sendMessageButton_Click);
+            // 
+            // readySendRichTextBox
+            // 
+            this.readySendRichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.readySendRichTextBox.Location = new System.Drawing.Point(0, 183);
+            this.readySendRichTextBox.Name = "readySendRichTextBox";
+            this.readySendRichTextBox.Size = new System.Drawing.Size(818, 143);
+            this.readySendRichTextBox.TabIndex = 3;
+            this.readySendRichTextBox.Text = "";
             // 
             // communicateToolStrip
             // 
@@ -169,25 +191,7 @@
             this.communicateButton.TabIndex = 2;
             this.communicateButton.Text = "聊天";
             this.communicateButton.UseVisualStyleBackColor = true;
-            // 
-            // readySendRichTextBox
-            // 
-            this.readySendRichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.readySendRichTextBox.Location = new System.Drawing.Point(0, 183);
-            this.readySendRichTextBox.Name = "readySendRichTextBox";
-            this.readySendRichTextBox.Size = new System.Drawing.Size(818, 120);
-            this.readySendRichTextBox.TabIndex = 3;
-            this.readySendRichTextBox.Text = "";
-            // 
-            // sendMessageButton
-            // 
-            this.sendMessageButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sendMessageButton.Location = new System.Drawing.Point(0, 303);
-            this.sendMessageButton.Name = "sendMessageButton";
-            this.sendMessageButton.Size = new System.Drawing.Size(818, 65);
-            this.sendMessageButton.TabIndex = 4;
-            this.sendMessageButton.Text = "发送";
-            this.sendMessageButton.UseVisualStyleBackColor = true;
+            this.communicateButton.Click += new System.EventHandler(this.communicateButton_Click);
             // 
             // MainForm
             // 

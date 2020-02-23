@@ -34,13 +34,23 @@ namespace Util
         /// 控制信息构造函数
         /// </summary>
         /// <param name="message">信息</param>
-        /// <param name="name">发送方名称</param>
-        public UdpMessage(string message, string name)
+        /// <param name="name">控制方名称</param>
+        /// <param name="isServer">是否是服务端</param>
+        public UdpMessage(string message, string name, bool isServer = false)
         {
-            MessageType = "Control";
             MessageContent = message;
-            UserName = name;
-            Receiver = "Server";
+            if (!isServer)
+            {
+                MessageType = "Control_Client";
+                UserName = name;
+                Receiver = "Server";
+            }
+            else
+            {
+                MessageType = "Control_Server";
+                UserName = "Server";
+                Receiver = name;
+            }
         }
 
         /// <summary>

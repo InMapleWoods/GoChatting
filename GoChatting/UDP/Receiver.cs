@@ -16,13 +16,13 @@ namespace GoChatting.UDP
         /// 回调委托
         /// </summary>
         /// <param name="strinfo">输入信息</param>
-        private delegate void CallBackDelegate(string strinfo);
+        public delegate void CallBackDelegate(string strinfo);
 
         /// <summary>
         /// 回调控制台委托
         /// </summary>
         /// <param name="strinfo">输入信息</param>
-        private delegate void CallBackConsoleDelegate(string strinfo);
+        public delegate void CallBackConsoleDelegate(string strinfo);
 
         /// <summary>
         /// 是否侦听控制信息
@@ -39,7 +39,7 @@ namespace GoChatting.UDP
         /// </summary>
         /// <param name="operate">委托对象</param>
         /// <param name="console">控制台对象</param>
-        public void StartListenning(object operate,object console)
+        public void StartListenning(object operate, object console)
         {
             isListenning = true;
             int port = 17722;
