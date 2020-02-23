@@ -36,12 +36,14 @@
             this.connectStatusLabel = new System.Windows.Forms.Label();
             this.functionPanel = new System.Windows.Forms.Panel();
             this.communicatePanel = new System.Windows.Forms.Panel();
-            this.showContentRichTextBox = new System.Windows.Forms.RichTextBox();
-            this.communicateButton = new System.Windows.Forms.Button();
             this.communicateToolStrip = new System.Windows.Forms.ToolStrip();
             this.communicateToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.communicateToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.communicateVoiceToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.showContentRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.communicateButton = new System.Windows.Forms.Button();
+            this.readySendRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.sendMessageButton = new System.Windows.Forms.Button();
             this.functionPanel.SuspendLayout();
             this.communicatePanel.SuspendLayout();
             this.communicateToolStrip.SuspendLayout();
@@ -50,36 +52,34 @@
             // onlineUsersComboBox
             // 
             this.onlineUsersComboBox.FormattingEnabled = true;
-            this.onlineUsersComboBox.Location = new System.Drawing.Point(213, 24);
-            this.onlineUsersComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.onlineUsersComboBox.Location = new System.Drawing.Point(240, 32);
             this.onlineUsersComboBox.Name = "onlineUsersComboBox";
-            this.onlineUsersComboBox.Size = new System.Drawing.Size(135, 23);
+            this.onlineUsersComboBox.Size = new System.Drawing.Size(151, 28);
             this.onlineUsersComboBox.TabIndex = 0;
             // 
             // onlineLabel
             // 
             this.onlineLabel.AutoSize = true;
-            this.onlineLabel.Location = new System.Drawing.Point(136, 26);
+            this.onlineLabel.Location = new System.Drawing.Point(153, 35);
             this.onlineLabel.Name = "onlineLabel";
-            this.onlineLabel.Size = new System.Drawing.Size(67, 15);
+            this.onlineLabel.Size = new System.Drawing.Size(69, 20);
             this.onlineLabel.TabIndex = 1;
             this.onlineLabel.Text = "在线列表";
             // 
             // connectStatusTipLabel
             // 
             this.connectStatusTipLabel.AutoSize = true;
-            this.connectStatusTipLabel.Location = new System.Drawing.Point(136, 28);
+            this.connectStatusTipLabel.Location = new System.Drawing.Point(153, 37);
             this.connectStatusTipLabel.Name = "connectStatusTipLabel";
-            this.connectStatusTipLabel.Size = new System.Drawing.Size(67, 15);
+            this.connectStatusTipLabel.Size = new System.Drawing.Size(69, 20);
             this.connectStatusTipLabel.TabIndex = 2;
             this.connectStatusTipLabel.Text = "连接状态";
             // 
             // connectButton
             // 
-            this.connectButton.Location = new System.Drawing.Point(393, 25);
-            this.connectButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.connectButton.Location = new System.Drawing.Point(442, 33);
             this.connectButton.Name = "connectButton";
-            this.connectButton.Size = new System.Drawing.Size(134, 22);
+            this.connectButton.Size = new System.Drawing.Size(151, 29);
             this.connectButton.TabIndex = 3;
             this.connectButton.Text = "连接";
             this.connectButton.UseVisualStyleBackColor = true;
@@ -87,9 +87,9 @@
             // connectStatusLabel
             // 
             this.connectStatusLabel.AutoSize = true;
-            this.connectStatusLabel.Location = new System.Drawing.Point(213, 28);
+            this.connectStatusLabel.Location = new System.Drawing.Point(240, 37);
             this.connectStatusLabel.Name = "connectStatusLabel";
-            this.connectStatusLabel.Size = new System.Drawing.Size(52, 15);
+            this.connectStatusLabel.Size = new System.Drawing.Size(54, 20);
             this.connectStatusLabel.TabIndex = 4;
             this.connectStatusLabel.Text = "未连接";
             // 
@@ -100,42 +100,22 @@
             this.functionPanel.Controls.Add(this.onlineLabel);
             this.functionPanel.Controls.Add(this.onlineUsersComboBox);
             this.functionPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.functionPanel.Location = new System.Drawing.Point(0, 70);
-            this.functionPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.functionPanel.Location = new System.Drawing.Point(0, 94);
             this.functionPanel.Name = "functionPanel";
-            this.functionPanel.Size = new System.Drawing.Size(727, 346);
+            this.functionPanel.Size = new System.Drawing.Size(818, 461);
             this.functionPanel.TabIndex = 5;
             // 
             // communicatePanel
             // 
+            this.communicatePanel.Controls.Add(this.sendMessageButton);
+            this.communicatePanel.Controls.Add(this.readySendRichTextBox);
             this.communicatePanel.Controls.Add(this.communicateToolStrip);
             this.communicatePanel.Controls.Add(this.showContentRichTextBox);
             this.communicatePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.communicatePanel.Location = new System.Drawing.Point(0, 70);
-            this.communicatePanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.communicatePanel.Location = new System.Drawing.Point(0, 93);
             this.communicatePanel.Name = "communicatePanel";
-            this.communicatePanel.Size = new System.Drawing.Size(727, 276);
+            this.communicatePanel.Size = new System.Drawing.Size(818, 368);
             this.communicatePanel.TabIndex = 3;
-            // 
-            // showContentRichTextBox
-            // 
-            this.showContentRichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.showContentRichTextBox.Location = new System.Drawing.Point(0, 0);
-            this.showContentRichTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.showContentRichTextBox.Name = "showContentRichTextBox";
-            this.showContentRichTextBox.Size = new System.Drawing.Size(727, 117);
-            this.showContentRichTextBox.TabIndex = 1;
-            this.showContentRichTextBox.Text = "";
-            // 
-            // communicateButton
-            // 
-            this.communicateButton.Location = new System.Drawing.Point(393, 24);
-            this.communicateButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.communicateButton.Name = "communicateButton";
-            this.communicateButton.Size = new System.Drawing.Size(134, 22);
-            this.communicateButton.TabIndex = 2;
-            this.communicateButton.Text = "聊天";
-            this.communicateButton.UseVisualStyleBackColor = true;
             // 
             // communicateToolStrip
             // 
@@ -144,9 +124,9 @@
             this.communicateToolStripButton,
             this.communicateToolStripComboBox,
             this.communicateVoiceToolStripButton});
-            this.communicateToolStrip.Location = new System.Drawing.Point(0, 117);
+            this.communicateToolStrip.Location = new System.Drawing.Point(0, 155);
             this.communicateToolStrip.Name = "communicateToolStrip";
-            this.communicateToolStrip.Size = new System.Drawing.Size(727, 28);
+            this.communicateToolStrip.Size = new System.Drawing.Size(818, 28);
             this.communicateToolStrip.TabIndex = 2;
             this.communicateToolStrip.Text = "toolStrip";
             // 
@@ -157,12 +137,12 @@
             this.communicateToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.communicateToolStripButton.Name = "communicateToolStripButton";
             this.communicateToolStripButton.Size = new System.Drawing.Size(29, 25);
-            this.communicateToolStripButton.Text = "toolStripButton";
+            this.communicateToolStripButton.Text = "表情";
             // 
             // communicateToolStripComboBox
             // 
             this.communicateToolStripComboBox.Name = "communicateToolStripComboBox";
-            this.communicateToolStripComboBox.Size = new System.Drawing.Size(121, 28);
+            this.communicateToolStripComboBox.Size = new System.Drawing.Size(136, 28);
             // 
             // communicateVoiceToolStripButton
             // 
@@ -170,17 +150,54 @@
             this.communicateVoiceToolStripButton.Name = "communicateVoiceToolStripButton";
             this.communicateVoiceToolStripButton.Size = new System.Drawing.Size(73, 25);
             this.communicateVoiceToolStripButton.Text = "语音通话";
+            this.communicateVoiceToolStripButton.Click += new System.EventHandler(this.communicateVoiceToolStripButton_Click);
+            // 
+            // showContentRichTextBox
+            // 
+            this.showContentRichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.showContentRichTextBox.Location = new System.Drawing.Point(0, 0);
+            this.showContentRichTextBox.Name = "showContentRichTextBox";
+            this.showContentRichTextBox.Size = new System.Drawing.Size(818, 155);
+            this.showContentRichTextBox.TabIndex = 1;
+            this.showContentRichTextBox.Text = "";
+            // 
+            // communicateButton
+            // 
+            this.communicateButton.Location = new System.Drawing.Point(442, 32);
+            this.communicateButton.Name = "communicateButton";
+            this.communicateButton.Size = new System.Drawing.Size(151, 29);
+            this.communicateButton.TabIndex = 2;
+            this.communicateButton.Text = "聊天";
+            this.communicateButton.UseVisualStyleBackColor = true;
+            // 
+            // readySendRichTextBox
+            // 
+            this.readySendRichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.readySendRichTextBox.Location = new System.Drawing.Point(0, 183);
+            this.readySendRichTextBox.Name = "readySendRichTextBox";
+            this.readySendRichTextBox.Size = new System.Drawing.Size(818, 120);
+            this.readySendRichTextBox.TabIndex = 3;
+            this.readySendRichTextBox.Text = "";
+            // 
+            // sendMessageButton
+            // 
+            this.sendMessageButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sendMessageButton.Location = new System.Drawing.Point(0, 303);
+            this.sendMessageButton.Name = "sendMessageButton";
+            this.sendMessageButton.Size = new System.Drawing.Size(818, 65);
+            this.sendMessageButton.TabIndex = 4;
+            this.sendMessageButton.Text = "发送";
+            this.sendMessageButton.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(727, 416);
+            this.ClientSize = new System.Drawing.Size(818, 555);
             this.Controls.Add(this.functionPanel);
             this.Controls.Add(this.connectStatusTipLabel);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.connectStatusLabel);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainForm";
@@ -190,7 +207,6 @@
             this.communicatePanel.ResumeLayout(false);
             this.communicatePanel.PerformLayout();
             this.communicateToolStrip.ResumeLayout(false);
-            this.communicateToolStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -211,5 +227,7 @@
         private System.Windows.Forms.ToolStripButton communicateToolStripButton;
         private System.Windows.Forms.ToolStripComboBox communicateToolStripComboBox;
         private System.Windows.Forms.ToolStripButton communicateVoiceToolStripButton;
+        private System.Windows.Forms.Button sendMessageButton;
+        private System.Windows.Forms.RichTextBox readySendRichTextBox;
     }
 }

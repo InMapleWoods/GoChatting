@@ -38,5 +38,13 @@ namespace GoChatting
         {
 
         }
+
+        /// <summary>
+        /// 打开语音通话窗口
+        /// </summary>
+        private void communicateVoiceToolStripButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
