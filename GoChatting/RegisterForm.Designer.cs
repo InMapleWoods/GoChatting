@@ -145,7 +145,6 @@
         private System.Windows.Forms.TextBox passwordTextBox;
         private System.Windows.Forms.TextBox repeatPasswordTextBox;
         private System.Windows.Forms.Label nameLabel;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label repeatPasswordLabel;
         private System.Windows.Forms.Button registerButton;
         private System.Windows.Forms.Label passwordLabel;

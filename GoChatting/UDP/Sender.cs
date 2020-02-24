@@ -123,6 +123,16 @@ namespace GoChatting.UDP
         {
             udpSender.Send(ServerIP, 17722, LocalIP, 17721, message.ToString());
         }
+        
+        /// <summary>
+        /// 发送信息
+        /// </summary>
+        /// <param name="message">待发送信息</param>
+        public void Send(string msg)
+        {
+            UdpMessage message = new UdpMessage(msg, userName, false);
+            Send(message);
+        }
     }
 
 }
