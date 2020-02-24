@@ -100,7 +100,7 @@ namespace GoChatting.UDP
             {
                 try
                 {
-                    udpSender.Send("152.136.73.240", 7722, IPList[i], 7721, "");
+                    udpSender.Send("152.136.73.240", 17722, IPList[i], 17721, new UdpMessage("","").ToString());
                     return IPList[i];
                 }
                 catch (System.Net.Sockets.SocketException)

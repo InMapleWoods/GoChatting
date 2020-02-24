@@ -50,6 +50,18 @@ namespace Util
         public string Receiver;
 
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        [JsonConstructor]
+        public UdpMessage(int MessageType, string MessageContent, string UserName, string Receiver)
+        {
+            this.MessageType = MessageType;
+            this.MessageContent = MessageContent;
+            this.UserName = UserName;
+            this.Receiver = Receiver;
+        }
+
+        /// <summary>
         /// 控制信息构造函数
         /// </summary>
         /// <param name="message">信息</param>

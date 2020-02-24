@@ -111,7 +111,7 @@ namespace LinuxServer
                         IPEndPoint AiPEndPoint = GetReceiverOfUser(name);
                         Match match = Regex.Match(strinfo, "RequestUserInfo:(.*)");
                         string requestName = match.Groups[1].Value.ToString();
-                        IPEndPoint[] ips = GetAllAddrOfUser(requestName);
+                        string[] ips = GetAllAddrOfUser(requestName);
                         string msg = JsonConvert.SerializeObject(new object[] { requestName, ips });
                         udpSender.Send("ResponseUserInfo:" + msg, name, AiPEndPoint);
                         #endregion
@@ -144,14 +144,14 @@ namespace LinuxServer
             }
             return null;
         }
-        private IPEndPoint[] GetAllAddrOfUser(string name)
+        private string[] GetAllAddrOfUser(string name)
         {
             User user = userHub.GetUser(name);
             if (user != null)
             {
                 if (user.Listenpoint != null && user.Sendpoint != null && user.Receivepoint != null && user.Recordpoint != null)
                 {
-                    return new IPEndPoint[] { user.Sendpoint, user.Receivepoint, user.Recordpoint, user.Listenpoint };
+                    return new string[] { GetStringOfIPEndPoint(user.Sendpoint), GetStringOfIPEndPoint(user.Receivepoint), GetStringOfIPEndPoint(user.Recordpoint), GetStringOfIPEndPoint(user.Listenpoint) };
                 }
             }
             return null;
@@ -268,9 +268,12 @@ namespace LinuxServer
             var item = from i in users
                        where i.Name == userName
                        select i;
-            foreach (var i in item)
+            if (item.Count() > 0)
             {
-                users.Remove(i);
+                foreach (var i in item)
+                {
+                    users.Remove(i);
+                }
             }
         }
 

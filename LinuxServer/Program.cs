@@ -12,6 +12,7 @@ namespace LinuxServer
             Console.WriteLine("Start!");
             UDPReceiver udpReceiver = new UDPReceiver();
             udpReceiver.StartListenning();
+            Console.ReadKey();
         }
     }
 

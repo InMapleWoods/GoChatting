@@ -93,6 +93,30 @@ namespace GoChatting
         {
             _sender = new Sender(user.UserName);
             receiver = new Receiver();
+            if (_sender.Init())
+            {
+                Console.WriteLine("客户端连接服务器初始化完成！");
+            }
+            else
+            {
+                Console.WriteLine("失败");
+            }
+            UdpReceiver.CallBackDelegate opCallBack = callBack;
+            UdpReceiver.CallBackConsoleDelegate consoleCallBack = formConsoleCallBack;
+            receiverThread = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
+            receiverThread.IsBackground = true;
+            Thread.Sleep(1000);
+            receiverThread.Start();
+        }
+
+        /// <summary>
+        /// 窗体关闭事件
+        /// </summary>
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            UdpMessage udpMessage = new UdpMessage("DisConnect", user.UserName);
+            _sender.Send(udpMessage);
+            Application.Exit();
         }
 
         /// <summary>
@@ -108,40 +132,43 @@ namespace GoChatting
         /// </summary>
         private void connectButton_Click(object sender, EventArgs e)
         {
-            if (receiverThread != null)
-            {
-                receiverThread.Abort();
-            }
-            if (_sender.Init())
-            {
-                UdpMessage udpMessage = new UdpMessage("Connect", user.UserName);
-                _sender.Send(udpMessage);
-                Console.WriteLine("客户端连接服务器初始化完成！");
-            }
-            else
-            {
-                Console.WriteLine("失败");
-            }
-            UdpReceiver.CallBackDelegate opCallBack = callBack;
-            UdpReceiver.CallBackConsoleDelegate consoleCallBack = formConsoleCallBack;
-            receiverThread = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
-            receiverThread.IsBackground = true;
-            Thread.Sleep(1000);
-            receiverThread.Start();
+            UdpMessage udpMessage = new UdpMessage("Connect", user.UserName);
+            _sender.Send(udpMessage);
         }
 
+        /// <summary>
+        /// 聊天按钮点击事件
+        /// </summary>
         private void communicateButton_Click(object sender, EventArgs e)
         {
             string desName = onlineUsersComboBox.Text;
             _sender.Send("RequestUserInfo:" + desName);
+            switchButton.Enabled = true;
         }
 
+        /// <summary>
+        /// 切换通讯用户
+        /// </summary>
+        private void switchButton_Click(object sender, EventArgs e)
+        {
+            readySendRichTextBox.Text = string.Empty;
+            showContentRichTextBox.Text = string.Empty;
+            communicatePanel.Enabled = false;
+            switchButton.Enabled = false;
+            communicateButton.Enabled = true;
+            onlineUsersComboBox.Enabled = true;
+        }
+
+        /// <summary>
+        /// 发送按钮点击事件
+        /// </summary>
         private void sendMessageButton_Click(object sender, EventArgs e)
         {
             string content = readySendRichTextBox.Text;
             string des = onlineUsersComboBox.Text;
             UdpMessage message = new UdpMessage(content, user.UserName, des);
             _sender.Send(message);
+            readySendRichTextBox.Text = string.Empty;
         }
 
         /// <summary>
@@ -182,9 +209,14 @@ namespace GoChatting
                 {
                     string Info = Regex.Match(content, "ResponseUserInfo:(.*)").Groups[1].Value.ToString();
                     object[] objs = JsonConvert.DeserializeObject<object[]>(Info);
-                    IPEndPoint[] ips = objs[1] as IPEndPoint[];
-                    connectIPs = ips.ToList();
+                    string[] ips = JsonConvert.DeserializeObject<string[]>(objs[1].ToString());
+                    foreach(var i in ips)
+                    {
+                        IPEndPoint ip = new IPEndPoint(IPAddress.Parse(i.Split("|")[1]), int.Parse(i.Split("|")[3]));
+                        connectIPs.Add(ip);
+                    }
                     setObj(onlineUsersComboBox, false);
+                    setObj(communicateButton, false);
                     setObj(communicatePanel, true);
                 }
                 else if (Regex.IsMatch(content, "BeReadyForCommunicate:(.*)"))
@@ -196,7 +228,7 @@ namespace GoChatting
             }
             else if (udpMessage.MessageType == MessageType.Communicate)
             {
-                string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")+"\n"+content;
+                string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + content+"\n";
                 setObj(showContentRichTextBox, showContent, true);
             }
             else if (udpMessage.MessageType == MessageType.Control_Client)
@@ -233,7 +265,7 @@ namespace GoChatting
                 }
                 else
                 {
-                    c.Text += obj; 
+                    c.Text += obj;
                 }
             }
         }
@@ -282,5 +314,6 @@ namespace GoChatting
             }
         }
         #endregion
+
     }
 }
