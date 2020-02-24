@@ -6,6 +6,25 @@ using System.Text;
 namespace Util
 {
     /// <summary>
+    /// 信息类型
+    /// </summary>
+    public class MessageType
+    {
+        /// <summary>
+        /// 客户端发送的控制信息
+        /// </summary>
+        public static int Control_Client = 0;
+        /// <summary>
+        /// 服务器发送的控制信息
+        /// </summary>
+        public static int Control_Server = 1;
+        /// <summary>
+        /// 聊天信息
+        /// </summary>
+        public static int Communicate = 2;
+    }
+
+    /// <summary>
     /// 信息类
     /// </summary>
     public class UdpMessage
@@ -13,7 +32,7 @@ namespace Util
         /// <summary>
         /// 信息标题
         /// </summary>
-        public string MessageType;
+        public int MessageType;
 
         /// <summary>
         /// 信息内容
@@ -41,13 +60,13 @@ namespace Util
             MessageContent = message;
             if (!isServer)
             {
-                MessageType = "Control_Client";
+                MessageType = Util.MessageType.Control_Client;
                 UserName = name;
                 Receiver = "Server";
             }
             else
             {
-                MessageType = "Control_Server";
+                MessageType = Util.MessageType.Control_Server;
                 UserName = "Server";
                 Receiver = name;
             }
@@ -61,7 +80,7 @@ namespace Util
         /// <param name="desname">接收方名称</param>
         public UdpMessage(string message, string srcname, string desname)
         {
-            MessageType = "Communicate";
+            MessageType = Util.MessageType.Communicate;
             MessageContent = message;
             UserName = srcname;
             Receiver = desname;

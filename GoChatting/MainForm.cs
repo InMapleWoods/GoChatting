@@ -1,10 +1,13 @@
 ﻿using GoChatting.Model;
 using GoChatting.UDP;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -51,7 +54,7 @@ namespace GoChatting
         /// </summary>
         /// <param name="c">目标操作控件</param>
         /// <param name="obj">修改文字</param>
-        delegate void SetControlTextCallback(Control c, string obj);
+        delegate void SetControlTextCallback(Control c, string obj, bool isAdd);
 
         /// <summary>
         /// 设置控件Enable
@@ -63,7 +66,13 @@ namespace GoChatting
         /// <summary>
         /// 当前登录用户列表
         /// </summary>
-        List<string> speakers = new List<string>();
+        List<string> onliner = new List<string>();
+
+        /// <summary>
+        /// 当前登录用户列表
+        /// </summary>
+        List<IPEndPoint> connectIPs = new List<IPEndPoint>();
+
         #endregion
 
         /// <summary>
@@ -99,30 +108,40 @@ namespace GoChatting
         /// </summary>
         private void connectButton_Click(object sender, EventArgs e)
         {
-            Receiver.CallBackDelegate opCallBack = callBack;
-            Receiver.CallBackConsoleDelegate consoleCallBack = formConsoleCallBack;
-            receiverThread = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
-            receiverThread.IsBackground = true;
-            Thread.Sleep(1000);
-            receiverThread.Start();
+            if (receiverThread != null)
+            {
+                receiverThread.Abort();
+            }
             if (_sender.Init())
             {
+                UdpMessage udpMessage = new UdpMessage("Connect", user.UserName);
+                _sender.Send(udpMessage);
                 Console.WriteLine("客户端连接服务器初始化完成！");
             }
             else
             {
                 Console.WriteLine("失败");
             }
+            UdpReceiver.CallBackDelegate opCallBack = callBack;
+            UdpReceiver.CallBackConsoleDelegate consoleCallBack = formConsoleCallBack;
+            receiverThread = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
+            receiverThread.IsBackground = true;
+            Thread.Sleep(1000);
+            receiverThread.Start();
         }
 
         private void communicateButton_Click(object sender, EventArgs e)
         {
-
+            string desName = onlineUsersComboBox.Text;
+            _sender.Send("RequestUserInfo:" + desName);
         }
 
         private void sendMessageButton_Click(object sender, EventArgs e)
         {
-
+            string content = readySendRichTextBox.Text;
+            string des = onlineUsersComboBox.Text;
+            UdpMessage message = new UdpMessage(content, user.UserName, des);
+            _sender.Send(message);
         }
 
         /// <summary>
@@ -142,33 +161,58 @@ namespace GoChatting
         {
             UdpMessage udpMessage = UdpMessage.GetUdpMessage(message);
             string content = udpMessage.MessageContent;
-            if (udpMessage.MessageType == "Control_Server")
+            if (udpMessage.MessageType == MessageType.Control_Server)
             {
                 if (content == "ConnectSuccess")
                 {
                     setObj(connectStatusLabel, "连接成功");
                     setObj(functionPanel, true);
                 }
-                else if (Regex.IsMatch(content, "Speaker:(.*)"))
+                else if (Regex.IsMatch(content, "Onliner:(.*)"))
                 {
-                    string name = Regex.Match(content, "Speaker:(.*)").Groups[1].Value.ToString();
-                    if (!speakers.Contains(name))
+                    string name = Regex.Match(content, "Onliner:(.*)").Groups[1].Value.ToString();
+                    if (!onliner.Contains(name))
                     {
-                        speakers.Add(name);
+                        onliner.Add(name);
                     }
-                    setObj(onlineUsersComboBox, speakers);
+                    //onliner.Remove(user.UserName);
+                    setObj(onlineUsersComboBox, onliner);
+                }
+                else if (Regex.IsMatch(content, "ResponseUserInfo:(.*)"))
+                {
+                    string Info = Regex.Match(content, "ResponseUserInfo:(.*)").Groups[1].Value.ToString();
+                    object[] objs = JsonConvert.DeserializeObject<object[]>(Info);
+                    IPEndPoint[] ips = objs[1] as IPEndPoint[];
+                    connectIPs = ips.ToList();
+                    setObj(onlineUsersComboBox, false);
+                    setObj(communicatePanel, true);
+                }
+                else if (Regex.IsMatch(content, "BeReadyForCommunicate:(.*)"))
+                {
+                    string fromName = Regex.Match(content, "BeReadyForCommunicate:(.*)").Groups[1].Value.ToString();
+                    setObj(onlineUsersComboBox, fromName);
+                    setObj(onlineUsersComboBox, false);
                 }
             }
-            else if (udpMessage.MessageType == "Communicate")
+            else if (udpMessage.MessageType == MessageType.Communicate)
             {
-
+                string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")+"\n"+content;
+                setObj(showContentRichTextBox, showContent, true);
+            }
+            else if (udpMessage.MessageType == MessageType.Control_Client)
+            {
+                if (content == "CommunicateReady")
+                {
+                    setObj(communicatePanel, true);
+                }
             }
         }
 
+        #region 线程设置Form控件属性
         /// <summary>
         /// 设置控件Text
         /// </summary>
-        public void setObj(Control c, string obj)
+        public void setObj(Control c, string obj, bool isAdd = false)
         {
             if (c.InvokeRequired)
             {
@@ -178,12 +222,19 @@ namespace GoChatting
                     if (c.Disposing || c.IsDisposed) return;
                 }
                 SetControlTextCallback d = new SetControlTextCallback(setObj);
-                c.Invoke(d, new object[] { c, obj });
+                c.Invoke(d, new object[] { c, obj, isAdd });
 
             }
             else
             {
-                c.Text = obj;
+                if (!isAdd)
+                {
+                    c.Text = obj;
+                }
+                else
+                {
+                    c.Text += obj; 
+                }
             }
         }
 
@@ -230,6 +281,6 @@ namespace GoChatting
                 c.Enabled = enable;
             }
         }
-
+        #endregion
     }
 }

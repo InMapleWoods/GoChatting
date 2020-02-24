@@ -114,6 +114,7 @@
             this.communicatePanel.Controls.Add(this.communicateToolStrip);
             this.communicatePanel.Controls.Add(this.showContentRichTextBox);
             this.communicatePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.communicatePanel.Enabled = false;
             this.communicatePanel.Location = new System.Drawing.Point(0, 93);
             this.communicatePanel.Name = "communicatePanel";
             this.communicatePanel.Size = new System.Drawing.Size(818, 368);
@@ -179,6 +180,7 @@
             this.showContentRichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.showContentRichTextBox.Location = new System.Drawing.Point(0, 0);
             this.showContentRichTextBox.Name = "showContentRichTextBox";
+            this.showContentRichTextBox.ReadOnly = true;
             this.showContentRichTextBox.Size = new System.Drawing.Size(818, 155);
             this.showContentRichTextBox.TabIndex = 1;
             this.showContentRichTextBox.Text = "";
