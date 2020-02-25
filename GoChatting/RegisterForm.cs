@@ -1,11 +1,5 @@
 ﻿using GoChatting.Bll;
-using GoChatting.Model;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace GoChatting
@@ -74,12 +68,12 @@ namespace GoChatting
                 {
                     MessageBox.Show("注册成功");
                     MessageBox.Show("请牢记登录账号：" + account);
-                    form.SetUser(account,userPassword);
+                    form.SetUser(account, userPassword);
                     form.Show();
                     Hide();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }

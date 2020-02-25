@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-
-namespace GoChatting.UDP
+﻿namespace GoChatting.UDP
 {
     /// <summary>
     /// 接收UDP数据报
     /// </summary>
-    public class Receiver:Util.UdpReceiver
+    public class Receiver : Util.UdpReceiver
     {
         /// <summary>
         /// 侦听信息

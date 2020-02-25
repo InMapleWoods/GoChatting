@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using Util;
 
 namespace GoChatting.UDP
@@ -100,7 +99,7 @@ namespace GoChatting.UDP
             {
                 try
                 {
-                    udpSender.Send("152.136.73.240", 17722, IPList[i], 17721, new UdpMessage("","").ToString());
+                    udpSender.Send("152.136.73.240", 17722, IPList[i], 17721, new UdpMessage("", "").ToString());
                     return IPList[i];
                 }
                 catch (System.Net.Sockets.SocketException)
@@ -123,7 +122,7 @@ namespace GoChatting.UDP
         {
             udpSender.Send(ServerIP, 17722, LocalIP, 17721, message.ToString());
         }
-        
+
         /// <summary>
         /// 发送信息
         /// </summary>
