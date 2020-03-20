@@ -58,27 +58,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing.Common" name="System.Drawing.Common, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-  <data name="communicateToolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing.Common" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAOjSURBVEhL5ZZtaJVlHMZv1HKfsmgUh1KkJIJWfnCCugWJ
-        EYR92ZDehN6gl8mYIpuuOZsv6bBUSs2sJJcs24wwxiaT6KDT4ZBpzM3tzOVojHNQ15p50ix9nqvnd5/n
-        bCsf53H7EnjBn3Of+76u3/957nPOcx/zv9Oj6SaUFTLZ3jAtMROoNDx4/fejE4B12ePaimaM37U2e0L4
-        wwXm9brFZnPju6aSYswca3jwjqkpV12UZVa1lJnw3oXj1b8nQxfrn9UfhxfaYswca3jw+rtx63roHjOp
-        aYWpjm27y8IV3Syd3RFc3hoevGTI+pjUxLacLjedv36bmWgU25paeV4yZFPeWq6OwMXaeTpR+aI+feFB
-        bc0JqeHj+YnmAcUaPqr5i+dFFkZKd3p8+cR9A1/NVuc3b2jj/HR1H3hH0UP5+vyVaWrakeM1KP9XMUcj
-        PHi5OLIwYPnYYJU+PSk39sEUOeH3FNn5mjoqXpXb9r4FA+SO/9uQOdYY4yVD1m1YJVgwffx1Sutcfm/j
-        pZ25cmpXyNlTZBu7x7zqKpN6S0csPHjJOPXFcr4rFqyuwvSjsBMthmn6/WZqdHVIbpl3V9vz5W58ywbd
-        xhK57SWBTYYXHrw24zGciiX2FSZsv82Q+AH3b58u98dlcmoKE0Fv7DYVSZ2FUs9NyvPgHcx7xRgmbL/N
-        kGoLzKbf986Rc6RAf9flJepAnv5qWKSrbW+nVHjJJPOwYML22wyJR1X8hyfVs3qGOkpeVtfaN239tOS5
-        wTHzrcsWDL5nPJIXFswjxeZrv82QbMP6WerdlKl4e7PQtSuX1RGusmM0EP1ZvS0N/jvvo/PGzCWFlwyC
-        YVkeM7Aht32hJkP9VU/pfF2lDY2lIQxYMAO3lA+2b3dI11py7JagsTSEAQtm4JeGZ9+Z9eNcRXIVWZph
-        g6NtSMGABfOGz1WOmHj9Y3bfez4pHXVDsjBgwfTx1ytvrnmme8Mdrts2V90rp2mg+eAtNyRDFkZ0y52C
-        6eODxXn2W9V9NhApmKrWL9f4uJs3bN293mbIwoDlY2+s5PF04fsH5JzMsoBY9TYLHKkhHrxkyKZ8PKHk
-        AWzv9GSm+nY9ovb8xxUpz1NX9RZdif2iS2dO2TFzrOHBS4ZsygdwUlwdW8LnEN/vbZMH+zP8hM599LB9
-        IFNnP5ts51jDg3dUfzGG66WZZjbfNL7efRV32+2K759iizFzrOHB68fGLo4YfsBBfxMDj5/bVMb8Az1i
-        WCrdC4liAAAAAElFTkSuQmCC
-</value>
-  </data>
 </root>

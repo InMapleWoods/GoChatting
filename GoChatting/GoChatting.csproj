@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Util\Util.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NAudio">
+      <HintPath>..\Lib\NAudio\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NSpeex">
+      <HintPath>..\Lib\NSpeex\NSpeex.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

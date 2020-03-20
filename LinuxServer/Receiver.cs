@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Linq;
 using Util;
-using Newtonsoft.Json;
 
 namespace LinuxServer
 {
@@ -111,7 +109,7 @@ namespace LinuxServer
                         IPEndPoint AiPEndPoint = GetReceiverOfUser(name);
                         Match match = Regex.Match(strinfo, "RequestUserInfo:(.*)");
                         string requestName = match.Groups[1].Value.ToString();
-                        IPEndPoint[] ips = GetAllAddrOfUser(requestName);
+                        string[] ips = GetAllAddrOfUser(requestName);
                         string msg = JsonConvert.SerializeObject(new object[] { requestName, ips });
                         udpSender.Send("ResponseUserInfo:" + msg, name, AiPEndPoint);
                         #endregion
@@ -119,6 +117,46 @@ namespace LinuxServer
                         IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
                         udpSender.Send("BeReadyForCommunicate:" + name, requestName, BiPEndPoint);
                         #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "ReadyToVoiceCommunicate:(.*)"))
+                    {
+                        #region A->B A端
+                        Match match = Regex.Match(strinfo, "ReadyToVoiceCommunicate:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        #endregion
+                        #region A->B B端
+                        IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("ReadyToVoiceCommunicate:" + name, requestName, BiPEndPoint);
+                        #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "BPlayToARecHoleOpened:(.*)"))
+                    {
+                        #region A->B B端
+                        Match match = Regex.Match(strinfo, "BPlayToARecHoleOpened:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        #endregion
+                        #region A->B A端
+                        IPEndPoint AiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("BPlayToARec:"+name, requestName, AiPEndPoint);
+                        #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "APlayToBRecHoleOpened:(.*)"))
+                    {
+                        #region A->B A端
+                        Match match = Regex.Match(strinfo, "APlayToBRecHoleOpened:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        #endregion
+                        #region A->B B端
+                        IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("APlayToBRec:" + name, requestName, BiPEndPoint);
+                        #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "EndVoice:(.*)"))
+                    {
+                        Match match = Regex.Match(strinfo, "EndVoice:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("EndVoice", name, BiPEndPoint);
                     }
                 }
                 else if (udpMessage.MessageType == MessageType.Communicate)
@@ -144,14 +182,14 @@ namespace LinuxServer
             }
             return null;
         }
-        private IPEndPoint[] GetAllAddrOfUser(string name)
+        private string[] GetAllAddrOfUser(string name)
         {
             User user = userHub.GetUser(name);
             if (user != null)
             {
                 if (user.Listenpoint != null && user.Sendpoint != null && user.Receivepoint != null && user.Recordpoint != null)
                 {
-                    return new IPEndPoint[] { user.Sendpoint, user.Receivepoint, user.Recordpoint, user.Listenpoint };
+                    return new string[] { GetStringOfIPEndPoint(user.Sendpoint), GetStringOfIPEndPoint(user.Receivepoint), GetStringOfIPEndPoint(user.Recordpoint), GetStringOfIPEndPoint(user.Listenpoint) };
                 }
             }
             return null;
@@ -268,9 +306,13 @@ namespace LinuxServer
             var item = from i in users
                        where i.Name == userName
                        select i;
-            foreach (var i in item)
+            var items = item.ToList();
+            if (items.Count() > 0)
             {
-                users.Remove(i);
+                foreach (var i in items)
+                {
+                    users.Remove(i);
+                }
             }
         }
 

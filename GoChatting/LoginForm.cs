@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using GoChatting.Bll;
+using GoChatting.Model;
+using System;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Windows.Forms;
-using GoChatting.Model;
-using GoChatting.Bll;
-using System.Net.NetworkInformation;
 
 namespace GoChatting
 {
@@ -81,7 +77,7 @@ namespace GoChatting
                 {
                     if (captchaTextBox.Visible)//若要求输入验证码
                     {
-                        captchaTextBox.Focus(); 
+                        captchaTextBox.Focus();
                     }
                     else//不要求输入验证码
                     {
