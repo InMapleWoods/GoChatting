@@ -118,6 +118,46 @@ namespace LinuxServer
                         udpSender.Send("BeReadyForCommunicate:" + name, requestName, BiPEndPoint);
                         #endregion
                     }
+                    else if(Regex.IsMatch(strinfo, "ReadyToVoiceCommunicate:(.*)"))
+                    {
+                        #region A->B A端
+                        Match match = Regex.Match(strinfo, "ReadyToVoiceCommunicate:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        #endregion
+                        #region A->B B端
+                        IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("ReadyToVoiceCommunicate:" + name, requestName, BiPEndPoint);
+                        #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "BPlayToARecHoleOpened:(.*)"))
+                    {
+                        #region A->B B端
+                        Match match = Regex.Match(strinfo, "BPlayToARecHoleOpened:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        #endregion
+                        #region A->B A端
+                        IPEndPoint AiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("BPlayToARec:"+name, requestName, AiPEndPoint);
+                        #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "APlayToBRecHoleOpened:(.*)"))
+                    {
+                        #region A->B A端
+                        Match match = Regex.Match(strinfo, "APlayToBRecHoleOpened:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        #endregion
+                        #region A->B B端
+                        IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("APlayToBRec:" + name, requestName, BiPEndPoint);
+                        #endregion
+                    }
+                    else if(Regex.IsMatch(strinfo, "EndVoice:(.*)"))
+                    {
+                        Match match = Regex.Match(strinfo, "EndVoice:(.*)");
+                        string requestName = match.Groups[1].Value.ToString();
+                        IPEndPoint BiPEndPoint = GetReceiverOfUser(requestName);
+                        udpSender.Send("EndVoice", name, BiPEndPoint);
+                    }
                 }
                 else if (udpMessage.MessageType == MessageType.Communicate)
                 {
@@ -266,9 +306,10 @@ namespace LinuxServer
             var item = from i in users
                        where i.Name == userName
                        select i;
-            if (item.Count() > 0)
+            var items = item.ToList();
+            if (items.Count() > 0)
             {
-                foreach (var i in item)
+                foreach (var i in items)
                 {
                     users.Remove(i);
                 }

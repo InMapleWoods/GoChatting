@@ -3,12 +3,7 @@ using GoChatting.UDP;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -73,6 +68,11 @@ namespace GoChatting
         /// </summary>
         List<IPEndPoint> connectIPs = new List<IPEndPoint>();
 
+        /// <summary>
+        /// 语音通话窗体
+        /// </summary>
+        VoiceForm voiceForm;
+
         #endregion
 
         /// <summary>
@@ -107,6 +107,15 @@ namespace GoChatting
             receiverThread.IsBackground = true;
             Thread.Sleep(1000);
             receiverThread.Start();
+            UdpMessage udpMessage = new UdpMessage("Connect", user.UserName);
+            System.Threading.Timer timer = new System.Threading.Timer(
+                (obj) =>
+                {
+                    _sender.Send((UdpMessage)obj);
+                },
+                udpMessage,
+                1000,
+                10000);
         }
 
         /// <summary>
@@ -124,7 +133,8 @@ namespace GoChatting
         /// </summary>
         private void communicateVoiceToolStripButton_Click(object sender, EventArgs e)
         {
-
+            voiceForm = new VoiceForm(user, connectIPs, onlineUsersComboBox.Text);
+            voiceForm.ShowDialog();
         }
 
         /// <summary>
@@ -168,7 +178,9 @@ namespace GoChatting
             string des = onlineUsersComboBox.Text;
             UdpMessage message = new UdpMessage(content, user.UserName, des);
             _sender.Send(message);
+            string showContent = user.UserName + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + content + "\n";
             readySendRichTextBox.Text = string.Empty;
+            showContentRichTextBox.Text += showContent;
         }
 
         /// <summary>
@@ -186,6 +198,7 @@ namespace GoChatting
         /// <param name="message">信息</param>
         private void callBack(string message)
         {
+            bool isVoice = false;
             UdpMessage udpMessage = UdpMessage.GetUdpMessage(message);
             string content = udpMessage.MessageContent;
             if (udpMessage.MessageType == MessageType.Control_Server)
@@ -195,22 +208,26 @@ namespace GoChatting
                     setObj(connectStatusLabel, "连接成功");
                     setObj(functionPanel, true);
                 }
+                else if (content == "EndVoice")
+                {
+                    voiceForm.End();
+                }
                 else if (Regex.IsMatch(content, "Onliner:(.*)"))
                 {
                     string name = Regex.Match(content, "Onliner:(.*)").Groups[1].Value.ToString();
-                    if (!onliner.Contains(name))
+                    if ((!onliner.Contains(name)) && (name != user.UserName))
                     {
                         onliner.Add(name);
                     }
-                    //onliner.Remove(user.UserName);
                     setObj(onlineUsersComboBox, onliner);
                 }
                 else if (Regex.IsMatch(content, "ResponseUserInfo:(.*)"))
                 {
                     string Info = Regex.Match(content, "ResponseUserInfo:(.*)").Groups[1].Value.ToString();
                     object[] objs = JsonConvert.DeserializeObject<object[]>(Info);
+                    string requestName= JsonConvert.DeserializeObject<string>(objs[0].ToString());
                     string[] ips = JsonConvert.DeserializeObject<string[]>(objs[1].ToString());
-                    foreach(var i in ips)
+                    foreach (var i in ips)
                     {
                         IPEndPoint ip = new IPEndPoint(IPAddress.Parse(i.Split("|")[1]), int.Parse(i.Split("|")[3]));
                         connectIPs.Add(ip);
@@ -218,6 +235,15 @@ namespace GoChatting
                     setObj(onlineUsersComboBox, false);
                     setObj(communicateButton, false);
                     setObj(communicatePanel, true);
+                    if (isVoice)
+                    {
+                        isVoice = false;
+                        if (connectIPs.Count == 4)
+                        {
+                            voiceForm = new VoiceForm(user,connectIPs, requestName, true);
+                            voiceForm.ShowDialog();
+                        }
+                    }
                 }
                 else if (Regex.IsMatch(content, "BeReadyForCommunicate:(.*)"))
                 {
@@ -225,17 +251,39 @@ namespace GoChatting
                     setObj(onlineUsersComboBox, fromName);
                     setObj(onlineUsersComboBox, false);
                 }
+                else if (Regex.IsMatch(content, "ReadyToVoiceCommunicate:(.*)"))
+                {
+                    string fromName = Regex.Match(content, "ReadyToVoiceCommunicate:(.*)").Groups[1].Value.ToString();
+                    setObj(onlineUsersComboBox, fromName);
+                    setObj(onlineUsersComboBox, false);
+                    _sender.Send("RequestUserInfo:" + fromName);
+                    isVoice = true;
+                }
+                else if (Regex.IsMatch(content, "BPlayToARec:(.*)"))
+                {
+                    string BName = Regex.Match(content, "BPlayToARec:(.*)").Groups[1].Value.ToString();
+                    setObj(onlineUsersComboBox, BName);
+                    setObj(onlineUsersComboBox, false);
+                    voiceForm.ReadyToRecord(connectIPs);
+                }
+                else if (Regex.IsMatch(content, "APlayToBRec:(.*)"))
+                {
+                    string AName = Regex.Match(content, "APlayToBRec:(.*)").Groups[1].Value.ToString();
+                    setObj(onlineUsersComboBox, AName);
+                    setObj(onlineUsersComboBox, false);
+                    voiceForm.BPlayer(connectIPs);
+                }
             }
             else if (udpMessage.MessageType == MessageType.Communicate)
             {
-                string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + content+"\n";
+                string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + content + "\n";
                 setObj(showContentRichTextBox, showContent, true);
             }
             else if (udpMessage.MessageType == MessageType.Control_Client)
             {
-                if (content == "CommunicateReady")
+                if (content == "BPlayToARec")
                 {
-                    setObj(communicatePanel, true);
+
                 }
             }
         }
@@ -288,6 +336,7 @@ namespace GoChatting
             }
             else
             {
+                ((ComboBox)c).DataSource = null;
                 ((ComboBox)c).DataSource = obj;
             }
         }
