@@ -144,6 +144,24 @@ namespace GoChatting
         {
             UdpMessage udpMessage = new UdpMessage("Connect", user.UserName);
             _sender.Send(udpMessage);
+            if (receiverThread.IsAlive)
+            {
+                receiverThread.Abort();
+            }
+            if (_sender.Init())
+            {
+                Console.WriteLine("客户端连接服务器初始化完成！");
+            }
+            else
+            {
+                Console.WriteLine("失败");
+            }
+            UdpReceiver.CallBackDelegate opCallBack = callBack;
+            UdpReceiver.CallBackConsoleDelegate consoleCallBack = formConsoleCallBack;
+            receiverThread = null;
+            receiverThread = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
+            receiverThread.IsBackground = true;
+            receiverThread.Start();
         }
 
         /// <summary>
@@ -189,7 +207,14 @@ namespace GoChatting
         /// <param name="message">要打印的信息</param>
         private void formConsoleCallBack(string message)
         {
-            Console.WriteLine(message);
+            try
+            {
+                Console.WriteLine(message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         /// <summary>
@@ -198,93 +223,108 @@ namespace GoChatting
         /// <param name="message">信息</param>
         private void callBack(string message)
         {
-            bool isVoice = false;
-            UdpMessage udpMessage = UdpMessage.GetUdpMessage(message);
-            string content = udpMessage.MessageContent;
-            if (udpMessage.MessageType == MessageType.Control_Server)
+            try
             {
-                if (content == "ConnectSuccess")
+                bool isVoice = false;
+                UdpMessage udpMessage = UdpMessage.GetUdpMessage(message);
+                string content = udpMessage.MessageContent;
+                if (udpMessage.MessageType == MessageType.Control_Server)
                 {
-                    setObj(connectStatusLabel, "连接成功");
-                    setObj(functionPanel, true);
-                }
-                else if (content == "EndVoice")
-                {
-                    voiceForm.End();
-                }
-                else if (Regex.IsMatch(content, "Onliner:(.*)"))
-                {
-                    string name = Regex.Match(content, "Onliner:(.*)").Groups[1].Value.ToString();
-                    if ((!onliner.Contains(name)) && (name != user.UserName))
+                    if (content == "ConnectSuccess")
                     {
-                        onliner.Add(name);
+                        setObj(connectStatusLabel, "连接成功");
+                        setObj(functionPanel, true);
                     }
-                    setObj(onlineUsersComboBox, onliner);
-                }
-                else if (Regex.IsMatch(content, "ResponseUserInfo:(.*)"))
-                {
-                    string Info = Regex.Match(content, "ResponseUserInfo:(.*)").Groups[1].Value.ToString();
-                    object[] objs = JsonConvert.DeserializeObject<object[]>(Info);
-                    string requestName= JsonConvert.DeserializeObject<string>(objs[0].ToString());
-                    string[] ips = JsonConvert.DeserializeObject<string[]>(objs[1].ToString());
-                    foreach (var i in ips)
+                    else if (content == "EndVoice")
                     {
-                        IPEndPoint ip = new IPEndPoint(IPAddress.Parse(i.Split("|")[1]), int.Parse(i.Split("|")[3]));
-                        connectIPs.Add(ip);
+                        voiceForm.End();
                     }
-                    setObj(onlineUsersComboBox, false);
-                    setObj(communicateButton, false);
-                    setObj(communicatePanel, true);
-                    if (isVoice)
+                    else if (Regex.IsMatch(content, "Onliner:(.*)"))
                     {
-                        isVoice = false;
-                        if (connectIPs.Count == 4)
+                        string name = Regex.Match(content, "Onliner:(.*)").Groups[1].Value.ToString();
+                        if ((!onliner.Contains(name)) && (name != user.UserName))
                         {
-                            voiceForm = new VoiceForm(user,connectIPs, requestName, true);
-                            voiceForm.ShowDialog();
+                            onliner.Add(name);
+                        }
+                        setObj(onlineUsersComboBox, onliner);
+                    }
+                    else if (Regex.IsMatch(content, "ResponseUserInfo:(.*)"))
+                    {
+                        string Info = Regex.Match(content, "ResponseUserInfo:(.*)").Groups[1].Value.ToString();
+                        object[] objs = JsonConvert.DeserializeObject<object[]>(Info);
+                        string requestName = objs[0].ToString();
+                        string[] ips = JsonConvert.DeserializeObject<string[]>(objs[1].ToString());
+                        foreach (var i in ips)
+                        {
+                            IPEndPoint ip = new IPEndPoint(IPAddress.Parse(i.Split("|")[1]), int.Parse(i.Split("|")[3]));
+                            connectIPs.Add(ip);
+                        }
+                        setObj(onlineUsersComboBox, false);
+                        setObj(communicateButton, false);
+                        setObj(communicatePanel, true);
+                        if (isVoice)
+                        {
+                            isVoice = false;
+                            if (connectIPs.Count == 4)
+                            {
+                                voiceForm = new VoiceForm(user, connectIPs, requestName, true);
+                                voiceForm.ShowDialog();
+                            }
                         }
                     }
+                    else if (Regex.IsMatch(content, "BeReadyForCommunicate:(.*)"))
+                    {
+                        string fromName = Regex.Match(content, "BeReadyForCommunicate:(.*)").Groups[1].Value.ToString();
+                        setObj(onlineUsersComboBox, fromName);
+                        setObj(onlineUsersComboBox, false);
+                        setObj(communicateButton, false);
+                        setObj(communicatePanel, true);
+                    }
+                    else if (Regex.IsMatch(content, "ReadyToVoiceCommunicate:(.*)"))
+                    {
+                        string fromName = Regex.Match(content, "ReadyToVoiceCommunicate:(.*)").Groups[1].Value.ToString();
+                        setObj(onlineUsersComboBox, fromName);
+                        setObj(onlineUsersComboBox, false);
+                        _sender.Send("RequestUserInfo:" + fromName);
+                        isVoice = true;
+                    }
+                    else if (Regex.IsMatch(content, "BPlayToARec:(.*)"))
+                    {
+                        string BName = Regex.Match(content, "BPlayToARec:(.*)").Groups[1].Value.ToString();
+                        setObj(onlineUsersComboBox, BName);
+                        setObj(onlineUsersComboBox, false);
+                        voiceForm.ReadyToRecord(connectIPs);
+                    }
+                    else if (Regex.IsMatch(content, "APlayToBRec:(.*)"))
+                    {
+                        string AName = Regex.Match(content, "APlayToBRec:(.*)").Groups[1].Value.ToString();
+                        setObj(onlineUsersComboBox, AName);
+                        setObj(onlineUsersComboBox, false);
+                        voiceForm.BPlayer(connectIPs);
+                    }
                 }
-                else if (Regex.IsMatch(content, "BeReadyForCommunicate:(.*)"))
+                else if (udpMessage.MessageType == MessageType.Communicate)
                 {
-                    string fromName = Regex.Match(content, "BeReadyForCommunicate:(.*)").Groups[1].Value.ToString();
-                    setObj(onlineUsersComboBox, fromName);
-                    setObj(onlineUsersComboBox, false);
+                    string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + content + "\n";
+                    setObj(showContentRichTextBox, showContent, true);
                 }
-                else if (Regex.IsMatch(content, "ReadyToVoiceCommunicate:(.*)"))
+                else if (udpMessage.MessageType == MessageType.Control_Client)
                 {
-                    string fromName = Regex.Match(content, "ReadyToVoiceCommunicate:(.*)").Groups[1].Value.ToString();
-                    setObj(onlineUsersComboBox, fromName);
-                    setObj(onlineUsersComboBox, false);
-                    _sender.Send("RequestUserInfo:" + fromName);
-                    isVoice = true;
-                }
-                else if (Regex.IsMatch(content, "BPlayToARec:(.*)"))
-                {
-                    string BName = Regex.Match(content, "BPlayToARec:(.*)").Groups[1].Value.ToString();
-                    setObj(onlineUsersComboBox, BName);
-                    setObj(onlineUsersComboBox, false);
-                    voiceForm.ReadyToRecord(connectIPs);
-                }
-                else if (Regex.IsMatch(content, "APlayToBRec:(.*)"))
-                {
-                    string AName = Regex.Match(content, "APlayToBRec:(.*)").Groups[1].Value.ToString();
-                    setObj(onlineUsersComboBox, AName);
-                    setObj(onlineUsersComboBox, false);
-                    voiceForm.BPlayer(connectIPs);
-                }
-            }
-            else if (udpMessage.MessageType == MessageType.Communicate)
-            {
-                string showContent = udpMessage.Receiver + "\t" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + content + "\n";
-                setObj(showContentRichTextBox, showContent, true);
-            }
-            else if (udpMessage.MessageType == MessageType.Control_Client)
-            {
-                if (content == "BPlayToARec")
-                {
+                    if (content == "BPlayToARec")
+                    {
 
+                    }
                 }
+            }
+            catch (ThreadAbortException e)
+            {
+                Console.WriteLine("线程终止");
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("error!!");
+                Console.WriteLine(e.Message);
             }
         }
 

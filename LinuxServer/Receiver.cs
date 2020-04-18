@@ -34,6 +34,17 @@ namespace LinuxServer
             receiverThread.IsBackground = true;
             Thread.Sleep(1000);
             receiverThread.Start();
+            Timer timer = new Timer(
+               (obj) =>
+               {
+                   if (!((Thread)obj).IsAlive)
+                   {
+                       obj = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
+                   }
+               },
+               receiverThread,
+               1000,
+               10000);
         }
 
         /// <summary>
@@ -118,7 +129,7 @@ namespace LinuxServer
                         udpSender.Send("BeReadyForCommunicate:" + name, requestName, BiPEndPoint);
                         #endregion
                     }
-                    else if(Regex.IsMatch(strinfo, "ReadyToVoiceCommunicate:(.*)"))
+                    else if (Regex.IsMatch(strinfo, "ReadyToVoiceCommunicate:(.*)"))
                     {
                         #region A->B A端
                         Match match = Regex.Match(strinfo, "ReadyToVoiceCommunicate:(.*)");
@@ -129,7 +140,7 @@ namespace LinuxServer
                         udpSender.Send("ReadyToVoiceCommunicate:" + name, requestName, BiPEndPoint);
                         #endregion
                     }
-                    else if(Regex.IsMatch(strinfo, "BPlayToARecHoleOpened:(.*)"))
+                    else if (Regex.IsMatch(strinfo, "BPlayToARecHoleOpened:(.*)"))
                     {
                         #region A->B B端
                         Match match = Regex.Match(strinfo, "BPlayToARecHoleOpened:(.*)");
@@ -137,10 +148,10 @@ namespace LinuxServer
                         #endregion
                         #region A->B A端
                         IPEndPoint AiPEndPoint = GetReceiverOfUser(requestName);
-                        udpSender.Send("BPlayToARec:"+name, requestName, AiPEndPoint);
+                        udpSender.Send("BPlayToARec:" + name, requestName, AiPEndPoint);
                         #endregion
                     }
-                    else if(Regex.IsMatch(strinfo, "APlayToBRecHoleOpened:(.*)"))
+                    else if (Regex.IsMatch(strinfo, "APlayToBRecHoleOpened:(.*)"))
                     {
                         #region A->B A端
                         Match match = Regex.Match(strinfo, "APlayToBRecHoleOpened:(.*)");
@@ -151,7 +162,7 @@ namespace LinuxServer
                         udpSender.Send("APlayToBRec:" + name, requestName, BiPEndPoint);
                         #endregion
                     }
-                    else if(Regex.IsMatch(strinfo, "EndVoice:(.*)"))
+                    else if (Regex.IsMatch(strinfo, "EndVoice:(.*)"))
                     {
                         Match match = Regex.Match(strinfo, "EndVoice:(.*)");
                         string requestName = match.Groups[1].Value.ToString();
