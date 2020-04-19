@@ -125,7 +125,9 @@ namespace GoChatting
         {
             UdpMessage udpMessage = new UdpMessage("DisConnect", user.UserName);
             _sender.Send(udpMessage);
-            Application.Exit();
+            Application.Exit(); 
+            Application.ExitThread();
+            Environment.Exit(0);
         }
 
         /// <summary>
@@ -144,10 +146,11 @@ namespace GoChatting
         {
             UdpMessage udpMessage = new UdpMessage("Connect", user.UserName);
             _sender.Send(udpMessage);
-            if (receiverThread.IsAlive)
+            if (receiver.GetListenStatus())
             {
-                receiverThread.Abort();
+                receiver.StopListenning();
             }
+            Thread.Sleep(1000);
             if (_sender.Init())
             {
                 Console.WriteLine("客户端连接服务器初始化完成！");
@@ -156,12 +159,11 @@ namespace GoChatting
             {
                 Console.WriteLine("失败");
             }
-            UdpReceiver.CallBackDelegate opCallBack = callBack;
-            UdpReceiver.CallBackConsoleDelegate consoleCallBack = formConsoleCallBack;
-            receiverThread = null;
-            receiverThread = new Thread(() => { receiver.StartListenning(opCallBack, consoleCallBack); });
-            receiverThread.IsBackground = true;
-            receiverThread.Start();
+            if (!receiver.GetListenStatus())
+            {
+                receiver.StartListenning();
+            }
+            Thread.Sleep(1000);
         }
 
         /// <summary>

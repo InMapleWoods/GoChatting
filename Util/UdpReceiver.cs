@@ -67,7 +67,20 @@ namespace Util
                     {
                         isListenning = false;
                         consoleDelegate("End Listenner");
-                        break;
+                        if (udpclient != null)
+                        {
+                            udpclient.Close();
+                            udpclient.Dispose();
+                        }
+                    }
+                    else
+                    {
+                        isListenning = true;
+                        consoleDelegate("Start Listenner"); 
+                        if (udpclient == null)
+                        {
+                            udpclient = new UdpClient(port);
+                        }
                     }
                     byte[] bytes = udpclient.Receive(ref ipendpoint);
                     string strinfo = Encoding.GetEncoding("utf-8").GetString(bytes, 0, bytes.Length);
@@ -108,6 +121,13 @@ namespace Util
         public void StopListenning()
         {
             listenMessage = false;
+        }
+        /// <summary>
+        /// 开始侦听
+        /// </summary>
+        public void StartListenning()
+        {
+            listenMessage = true;
         }
     }
 }
